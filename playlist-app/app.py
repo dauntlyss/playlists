@@ -17,7 +17,7 @@ app.config['SECRET_KEY'] = "I'LL NEVER TELL!!"
 # Having the Debug Toolbar show redirects explicitly is often useful;
 # however, if you want to turn it off, you can uncomment this line:
 #
-# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
 
@@ -56,7 +56,25 @@ def add_playlist():
     - if valid: add playlist to SQLA and redirect to list-of-playlists
     """
 
-    # ADD THE NECESSARY CODE HERE FOR THIS ROUTE TO WORK
+    form = PlaylistForm()
+
+    if form.validate_on_submit():
+        name = form.name.data
+        description = form.description.data
+
+        playlist = Playlist(
+            name=name,
+            description=description,
+        )
+
+        db.session.add(playlist)
+        db.session.commit()
+
+        return redirect(f"/playlists")
+
+    else:
+        return render_template("new_playlist.html", form=form)
+ 
 
 
 ##############################################################################
@@ -86,7 +104,24 @@ def add_song():
     - if valid: add playlist to SQLA and redirect to list-of-songs
     """
 
-    # ADD THE NECESSARY CODE HERE FOR THIS ROUTE TO WORK
+    form = SongForm()
+
+    if form.validate_on_submit():
+        title = form.title.data
+        artist = form.artist.data
+
+        song = Song(
+            title=title,
+            artist=artist,
+        )
+
+        db.session.add(song)
+        db.session.commit()
+
+        return redirect(f"/songs")
+
+    else:
+        return render_template("new_song.html", form=form)
 
 
 @app.route("/playlists/<int:playlist_id>/add-song", methods=["GET", "POST"])
